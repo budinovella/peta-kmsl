@@ -1,158 +1,160 @@
-// Map position
-let map = L.map("map", {center: [-0.5, 100], zoom: 8});
+var petaHarimau = L.layerGroup();
+var petaKk = L.layerGroup();
+var petaBeruang = L.layerGroup();
+var petaBuaya1 = L.layerGroup();
+var petaBuaya2 = L.layerGroup();
+var petaLainnya = L.layerGroup();
+
+let link = 'https://sheets.googleapis.com/v4/spreadsheets/1vdjyIBrYn6Q2RV5Qsg6_2qQ2jVJIPRKKwmGwViE3gdA/values/FormResponses1?key=AIzaSyDxkeqWydQdTf92Gv0V_UTtPvkyfaFTcys';
+
+function Get(yourUrl){
+    var Httpreq = new XMLHttpRequest(); // a new request
+    Httpreq.open("GET",yourUrl,false);
+    Httpreq.send(null);
+    return Httpreq.responseText;
+}
+var dataKonflik = JSON.parse(Get(link));
+
+function dataSatwa(data, namaSatwa){
+	var result = [];
+	for (let i = 1; i < dataKonflik.values.length ; i++) {
+		var r = [];
+		if (dataKonflik.values[i][2] === namaSatwa){
+			r[0] = dataKonflik.values[i][0]
+			r[1] = dataKonflik.values[i][1]
+			r[2] = dataKonflik.values[i][2]
+			r[3] = dataKonflik.values[i][3]
+			r[4] = dataKonflik.values[i][4]
+			r[5] = dataKonflik.values[i][5]
+			r[6] = dataKonflik.values[i][6]
+			r[7] = dataKonflik.values[i][7]
+			r[8] = dataKonflik.values[i][8]
+			result.push(r);
+			//console.log("HASIL DATA KUCINGx: " + result.lat[1]);
+		}
+	}
+	return result;
+}
+
+function dataSatwaLainnya(data){
+	var result = [];
+	for (let i = 1; i < dataKonflik.values.length ; i++) {
+		var r = [];
+		if (dataKonflik.values[i][2] !== 'Harimau Sumatera (Panthera tigris sumatrae Pocock, 1929)' &&
+			dataKonflik.values[i][2] !== 'Beruang Madu (Helarctos malayanus)' &&
+			dataKonflik.values[i][2] !== 'Buaya Muara (Crocodylus porosus)' &&
+			dataKonflik.values[i][2] !== 'Buaya Senyulong (Tomistoma schlegelii)'
+			){
+			r[0] = dataKonflik.values[i][0]
+			r[1] = dataKonflik.values[i][1]
+			r[2] = dataKonflik.values[i][2]
+			r[3] = dataKonflik.values[i][3]
+			r[4] = dataKonflik.values[i][4]
+			r[5] = dataKonflik.values[i][5]
+			r[6] = dataKonflik.values[i][6]
+			r[7] = dataKonflik.values[i][7]
+			r[8] = dataKonflik.values[i][8]
+			result.push(r);
+		}
+	}
+	return result;
+}
+
+dataHarimau = dataSatwa(dataKonflik, 'Harimau Sumatera (Panthera tigris sumatrae Pocock, 1929)');
+dataBeruang = dataSatwa(dataKonflik, 'Beruang Madu (Helarctos malayanus)');
+dataBuaya1 = dataSatwa(dataKonflik, 'Buaya Muara (Crocodylus porosus)');
+dataBuaya2 = dataSatwa(dataKonflik, 'Buaya Senyulong (Tomistoma schlegelii)');
+dataLainnya = dataSatwaLainnya(dataKonflik);
+
+function dataPeta(data, markerColor, namaLayer){
+	
+
+	for (let i = 0; i < data.length; i++) {
+		
+		var latlng = L.latLng({ lat: data[i][5], lng: data[i][4] });
+		var content = '<table class="table table-dark">' +
+			'<tr>' + '<th>Tanggal</th>' + '<td>' + data[i][1] + '</td>' + '</tr>' +
+			'<tr>' + '<th>Satwa</th>' + '<td>' + data[i][2] + '</td>' + '</tr>' +
+			'<tr>' + '<th>Lokasi</th>' + '<td>' + data[i][3] + '</td>' + '</tr>' + 
+			'<tr>' + '<th>Keterangan</th>' + '<td>' + data[i][7] + '</td>' + '</tr>' +
+			'</table>';
+		let icon;
+		let webIconColor = '#ffffff';
+		let webmarkerColor = 'rgba(255,25, 92, 1)';
+		let weboutlineColor = 'white';
+		let webIconSize = [31, 42];
+
+			// Create icon
+		var webIcon = L.IconMaterial.icon({
+		    icon: 'pets',            			// Name of Material icon
+		    iconColor: webIconColor,            // Material icon color (could be rgba, hex, html name...)
+		    markerColor: markerColor, 		// Marker fill color
+		    outlineColor: weboutlineColor,		// Marker outline color
+		    outlineWidth: 1,					// Marker outline width 
+		    iconSize: webIconSize				// Width and height of the icon
+		  })
+			L.marker( latlng,  {icon: webIcon} ).bindPopup(L.popup({maxWidth:500}).setContent(content)).addTo(namaLayer);
+		} 
+}
+
+/*
+color rgba:
+rgba(34, 49, 63, 1) 	//ebony clay
+rgba(25, 181, 254, 1) 	//deepsky blue
+rgba(240, 52, 52, 1)	//pomegranate (red)
+rgba(27, 163, 156, 1)	//light sea green 
+petaLainnya
+*/
+PHarimau = dataPeta(dataHarimau, 'rgba(240, 52, 52, 1)', petaHarimau);
+PBeruang = dataPeta(dataBeruang, 'rgba(27, 163, 156, 1)', petaBeruang);
+PBuaya1 = dataPeta(dataBuaya1, 'rgba(25, 181, 254, 1)', petaBuaya1);
+PBuaya2 = dataPeta(dataBuaya2, 'rgba(25, 181, 254, 1)', petaBuaya2);
+PLainnya = dataPeta(dataLainnya, 'rgba(34, 49, 63, 1)', petaLainnya);
 
 // OpenStreetMap
-L.tileLayer(
+var osm = L.tileLayer(
 	"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
 	{attribution: "&copy; OpenStreetMap"}
-).addTo(map);
+);
+
+// Map position
+var map = L.map('map', {
+	center: [-0.5, 100],
+	zoom: 8,
+	layers: [osm, petaKk, petaHarimau]
+});
 
 
 // Kawasan Hutan Konservasi di Sumatera Barat
 let geojsonLayer = new L.GeoJSON.AJAX("geodata/kk.json");
-geojsonLayer.addTo(map);
-
-/*
-let pnt = L.marker([-0.262218, 100]).addTo(map);
+geojsonLayer.addTo(petaKk);
 
 
-let popup = L.popup();
-
-L.marker(L.latLng(-0.256, 100.2)).addTo(map);
-
-function onMapCilck(e){
-	popup
-		.setLatLng(e.latlng)
-		.setContent(
-			"You clicked the map at -<br>" +
-			"<b>lon:</b> " + Math.round(e.latlng.lng * 10000000) / 1000000 + "<br>" +
-			"<b>lat:</b> " + Math.round(e.latlng.lat * 10000000) / 1000000
-		)
-		.openOn(map);
-}
-
-map.addEventListener("click", onMapCilck);
-*/
-
-let link = 'https://sheets.googleapis.com/v4/spreadsheets/1vdjyIBrYn6Q2RV5Qsg6_2qQ2jVJIPRKKwmGwViE3gdA/values/FormResponses1?key=AIzaSyDxkeqWydQdTf92Gv0V_UTtPvkyfaFTcys';
-
-var getJSON = function(url, callback) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', url, true);
-		xhr.responseType = 'json';
-		xhr.onload = function() {
-			var status = xhr.status;
-			if (status === 200) {
-				callback(null, xhr.response);
-			} else {
-				callback(status, xhr.response);
-			}
-		};
-		xhr.send();
+var baseLayers = {	
+	"OpenStreetMap": osm
 };
 
-getJSON(link,
-function(err, data) {
-	if (err !== null) {
-		alert('Something went wrong: ' + err);
-	} else {
-		for (let i = 1; i < data.values.length; i++) {
-			var latlng = L.latLng({ lat: data.values[i][5], lng: data.values[i][4] });
-			var content = '<table class="table table-dark">' +
-			'<tr>' + '<th>Tanggal</th>' + '<td>' + data.values[i][1] + '</td>' + '</tr>' +
-			'<tr>' + '<th>Satwa</th>' + '<td>' + data.values[i][2] + '</td>' + '</tr>' +
-			'<tr>' + '<th>Lokasi</th>' + '<td>' + data.values[i][3] + '</td>' + '</tr>' + 
-			'<tr>' + '<th>Keterangan</th>' + '<td>' + data.values[i][7] + '</td>' + '</tr>' +
-			'</table>';
-			let icon;
-				if (data.values[i][2] == 'Harimau Sumatera (Panthera tigris sumatrae Pocock, 1929)') {
-					// select name of material icon, see https://fonts.google.com/icons?selected=Material+Icons
-					icon = "pets";
-				} else if (data.values[i][2] == 'Beruang Madu (Helarctos malayanus)') {
-					icon = "cancel";
-				} else if (data.values[i][2] == 'Buaya Muara (Crocodylus porosus)' ) {
-					icon = "add circle";
-				} else if (data.values[i][2] == 'Buaya Senyulong (Tomistoma schlegelii)' ) {
-					icon = "remove circle";
-				} else if (data.values[i][2] == 'Beruk (Macaca nemestrina)' ) {
-					icon = "push pin";
-				} else if (data.values[i][2] == 'Kera (Macaca fasciculari)' ) {
-					icon = "change circle";
-				}else {
-					icon = "clear";
-				}
+var overlays = {
+	"KK Sumbar": petaKk,	
+	"Harimau Sumatera": petaHarimau,
+	"Beruang Madu": petaBeruang,
+	"Buaya Muara": petaBuaya1,
+	"Buaya Senyulong": petaBuaya2,
+	"Satwa lainnya": petaLainnya
+};
 
-			let webIconColor = '#ffffff';
-			let webmarkerColor = 'rgba(255,25, 92, 1)';
-			let weboutlineColor = 'white';
-			let webIconSize = [31, 42];
-
-
-			// Create icon
-			var webIcon = L.IconMaterial.icon({
-			    icon: icon,            				// Name of Material icon
-			    iconColor: webIconColor,            // Material icon color (could be rgba, hex, html name...)
-			    markerColor: webmarkerColor, 		// Marker fill color
-			    outlineColor: weboutlineColor,		// Marker outline color
-			    outlineWidth: 1,					// Marker outline width 
-			    iconSize: webIconSize				// Width and height of the icon
-			  })
-
-
-				L.marker( latlng,  {icon: webIcon} ).bindPopup(L.popup({maxWidth:500}).setContent(content)).addTo(map);
-
-/*
-Harimau Sumatera (Panthera tigris sumatrae Pocock, 1929)
-Beruang Madu (Helarctos malayanus)
-Buaya Muara (Crocodylus porosus)
-Buaya Senyulong (Tomistoma schlegelii)
-Beruk (Macaca nemestrina)
-Biawak (Varanus salvator)
-Binturung (Arctictis binturong)
-Kera (Macaca fasciculari)
-Kucing Emas (Catopuma temminckii)
-Kucing Hutan/ Macan dahan benua (Neofelis nebulosa)
-Kucing Hutan/ Macan dahan (Neofelis diardi)
-Kucing Hutan/ Kucing batu (Pardofelis marmorata)
-Kucing Hutan/ Kucing congkok/ Meong congkok (Prionailurus bengalensis)
-Penyu Hijau (Chelonia mydas)
-Penyu Lekang (Lepidochelys olivacea)
-Penyu Sisik (Eretmochelys imbricata)
-Rusa Sambar (Rusa unicolor)
-Sanca Batik/ Sanca kembang (Malayopython reticulatus)
-Tapir (Tapirus indicus)
-Elang Bondol (Haliastur indus)
-Elang Brontok (Spizaetus cirrhatus)
-Elang Coklat (Accipiter fasciatus)
-Elang Ikan, Elang Tiram (Pandion haliaetus)
-Elang Jawa (Spizaetus bartelsi)
-Elang Kecil/ Elang perut karat (Lophotriorchis kienerii)
-Burung Elang-ikan Kecil, Elang ikan kepala kelabu, Elang laut kecil, Elangikan Kecil, Elang-ikan kecil (Haliaeetus humilis)
-Elang Laut data putih (Haliaeetus leucogaster)
-Elang Tikus (Elanus caeruleus)
-Elang Ular Bido (Spilornis cheela)
-
-*/
-				
-				
-			} 
-	}
-});
-
-
-// Well, this one-liner is possible: 
-// var mark1=L.marker([51.5, -0.09]).bindPopup(L.popup({maxWidth:500}).setContent("I am a standalone popup.")).addTo(map); – erik Sep 11 '15 at 15:18
+L.control.layers(baseLayers, overlays).addTo(map);
 
 let legenda = L.control({position: "bottomleft"});
 
 legenda.onAdd = function(){
 	let div = L.DomUtil.create ("div", "legenda");
 	div.innerHTML = 
-		'<p><b>Peta penyebaran KMSL di Sumatera Barat</b></p><hr>' + 
+		'<p><b>Peta penyebaran KMSL di Sumbar</b></p><hr>' + 
 		'<p>Konflik manusia dan satwa liar ' +
 		'(KMSL) merupakan salah satu ' +
 		'ancaman terhadap kelestarian jenis ' +
-		'di Sumatera Barat' ;
+		'di Sumbar<br>&copy; Balai KSDA Sumbar' ;
 	return div;
 }
 
