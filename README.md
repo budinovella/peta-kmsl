@@ -4,7 +4,7 @@ Customize Leaflet maps with a linked Google Sheets from Google Form and GeoJSON 
 
 ## Live links (Peta Konflik Manusia dan Satwa Liar di Sumatera Barat)
 - Leaflet Map https://budinovella.github.io/peta-kmsl/
-- Google Sheets response https://docs.google.com/spreadsheets/d/1ZxvU8eGyuN9M8GxTU9acKVJv70iC3px_m3EVFsOHN9g/edit#gid=0
+
 
 ## Idea
 I want to use github to host leafleat map and the data collect by Google Sheet via Google Form
