@@ -10,8 +10,6 @@ var petaLandak = L.layerGroup();
 var petaKukang = L.layerGroup();
 var petaLainnya = L.layerGroup();
 
-let link = 'https://sheets.googleapis.com/v4/spreadsheets/1vdjyIBrYn6Q2RV5Qsg6_2qQ2jVJIPRKKwmGwViE3gdA/values/FormResponses1?key=AIzaSyDxkeqWydQdTf92Gv0V_UTtPvkyfaFTcys';
-
 function Get(yourUrl){
     var Httpreq = new XMLHttpRequest(); // a new request
     Httpreq.open("GET",yourUrl,false);
